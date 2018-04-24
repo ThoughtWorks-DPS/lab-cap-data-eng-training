@@ -1,0 +1,50 @@
+version: 2.0
+jobs:
+  build-bikestream:
+    docker:
+      - image: circleci/openjdk:8-jdk
+        environment:
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+            AWS_DEFAULT_REGION: us-west-2
+            APP_HOME: kafka/bikestream
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: gradle -v
+
+      - run: |
+          curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+          sudo chmod +x /usr/local/bin/kubectl
+          curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+          chmod +x kops-linux-amd64
+          sudo mv kops-linux-amd64 /usr/local/bin/kops
+      - run: |
+          sudo apt-get install python-pip python-dev jq
+          sudo pip install awscli
+      - run:
+          command ./circle_setup_k8.sh
+      - run:
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - run: |
+          cd kafka/bikestream
+          TAG=0.1.$CIRCLE_BUILD_NUM
+          gradle build
+          mkdir -p build/docker
+          cp src/main/Docker/Dockerfile build/docker
+          cp build/libs/*.jar build/docker
+          cd build/docker
+          docker build -t quay.io/thoughtworks_aelab/bikestream:$TAG .
+          docker push quay.io/thoughtworks_aelab/bikestream:$TAG
+
+      - run: |
+          cd kafka/bikestream/src/main/Docker
+          kubectl apply -f bikestream.yml
+
+workflows:
+  version: 2
+  daemonsets:
+    jobs:
+      - build-bikestream

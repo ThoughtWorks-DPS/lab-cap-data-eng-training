@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: bikestream
+spec:
+  replicas: 1
+  selector:
+    app: bikestream
+  template:
+    metadata:
+      labels:
+        app: bikestream
+    spec:
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: thoughtworks-aelab-quayio-pull-secret
+
+      containers:
+      - name: service
+        image: quay.io/thoughtworks_aelab/bikestream
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: KAFKA_BROKERS
+          value: "10.2.49.81:9092,10.2.50.228:9092,10.2.48.178:9092"
+        ports:
+        - name: service
+          containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bikestream
+spec:
+  selector:
+    app: bikestream
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080
