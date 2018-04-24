@@ -94,8 +94,8 @@ brew install kafka
 ```
 
 Now lets get our services up and running
-
+```
 brew services start zookeeper
 brew services start kafka
-
+```
 Reminder: Zookeeper is on port 2182 and kafka on 9092
