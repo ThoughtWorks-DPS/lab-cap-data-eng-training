@@ -9,6 +9,24 @@ If you don't have gradle for java development install it now with homebrew.
 Then make sure you've downloaded the private AWS key (see the parent README.md)
 
 
+## Running Kafka Locally for development
+
+Note: These instructions apply currently only to OS-X
+
+installation of Kafka is simply leveraging homebrew
+
+```
+brew install zookeeper
+brew install kafka
+```
+
+Now lets get our services up and running
+```
+brew services start zookeeper
+brew services start kafka
+```
+Reminder: Zookeeper is on port 2182 and kafka on 9092
+
 ## Access to the training Kafka Cluster in AWS
 
 In order to setup ssh access add the following to your ~/.ssh/config file
@@ -68,8 +86,7 @@ More message text
 Now we can open another terminal window, ssh as above and lets setup a consumer to read the data
 
 ```
-/bin/kafka-console-consumer.sh --bootstrap-server 10.2.48.178:9092 --offset 'earliest'  --topic ranbir_test ```
-
+/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server 10.2.48.178:9092 --offset 'earliest'  --topic ranbir_test
 ```
 
 Lets look into our topic a bit more and find out how it's organized on the cluster.
@@ -80,22 +97,4 @@ Lets look into our topic a bit more and find out how it's organized on the clust
 Topic:ranbir_test	PartitionCount:1	ReplicationFactor:3	Configs:
 Topic: ranbir_test	Partition: 0	Leader: 0	Replicas: 0,1,2	Isr: 0,1,2
 
-``
-
-## Running Kafka Locally for development
-
-Note: These instructions apply currently only to OS-X
-
-installation of Kafka is simply leveraging homebrew
-
 ```
-brew install zookeeper
-brew install kafka
-```
-
-Now lets get our services up and running
-```
-brew services start zookeeper
-brew services start kafka
-```
-Reminder: Zookeeper is on port 2182 and kafka on 9092

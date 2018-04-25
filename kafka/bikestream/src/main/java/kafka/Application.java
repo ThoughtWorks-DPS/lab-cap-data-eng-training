@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -29,9 +31,6 @@ public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args).close();
     }
-
-    @Autowired
-    private KafkaTemplate<String, String> template;
 
     private final CountDownLatch latch = new CountDownLatch(100);
 
@@ -51,6 +50,11 @@ public class Application {
     @KafkaListener(id = "test", topics = "${write.topic}")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception {
         logger.info("HEY MESSAGE RECEIVED---->{}",cr.toString());
+    }
+
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.build();
     }
 
 }
