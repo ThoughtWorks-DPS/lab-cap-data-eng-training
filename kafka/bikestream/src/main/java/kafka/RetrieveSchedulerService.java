@@ -1,8 +1,8 @@
 package kafka;
 
 
-import domain.StationStatus;
 import domain.Feed;
+import domain.StationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +29,13 @@ public class RetrieveSchedulerService {
         logger.info("INSIDE SCHEDULED TASK");
         Feed feed = restTemplate.getForObject("https://gbfs.citibikenyc.com/gbfs/fr/station_status.json", Feed.class);
 
-        if(feed.getData() != null) {
-            logger.info("got station status master with {} status messages",feed.getData().getStations().size());
-            for(StationStatus stationStatus: feed.getData().getStations()) {
+        if (feed.getData() != null) {
+            logger.info("got station status master with {} status messages", feed.getData().getStations().size());
+            for (StationStatus stationStatus : feed.getData().getStations()) {
                 kafkaProducer.sendMessage(stationStatus);
             }
-        }
-        else {
+        } else {
             logger.error("got no data?");
         }
-
-
-//        String sentTimeStr = dateFormat.format(new Date());
-//        logger.info("INSIDE SCHEDULED TASK");
-//        kafkaProducer.sendMessage(String.format("sent at :%s", sentTimeStr));
-//        kafkaProducer.
     }
 }

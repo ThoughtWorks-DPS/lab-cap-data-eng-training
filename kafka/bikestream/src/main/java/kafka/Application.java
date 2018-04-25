@@ -11,7 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
@@ -42,14 +41,14 @@ public class Application {
     @Bean
     public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
         return args -> {
-           logger.info("Starting app");
-           latch.await();
+            logger.info("Starting app");
+            latch.await();
         };
     }
 
     @KafkaListener(id = "test", topics = "${write.topic}")
     public void listen(ConsumerRecord<?, ?> cr) throws Exception {
-        logger.info("HEY MESSAGE RECEIVED---->{}",cr.toString());
+        logger.info("HEY MESSAGE RECEIVED---->{}", cr.toString());
     }
 
     @Bean

@@ -1,7 +1,5 @@
 package kafka;
 
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import domain.StationStatus;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,6 +15,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +27,15 @@ public class KafkaConfiguration {
 
     public static Logger logger = LoggerFactory.getLogger(KafkaConfiguration.class);
 
-    @Value( "${kafka.brokers}" )
+    @Value("${kafka.brokers}")
     private String kafkaBrokers;
 
-    @Value( "${write.topic}")
+    @Value("${write.topic}")
     private String writeTopic;
 
     @Bean
     public Map<String, Object> producerConfigs() {
-        logger.info("THIS IS THE KAFKA BROKERS URL->{}",kafkaBrokers);
+        logger.info("THIS IS THE KAFKA BROKERS URL->{}", kafkaBrokers);
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBrokers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -68,7 +68,7 @@ public class KafkaConfiguration {
 
     @Bean
     public ConsumerFactory<String, StationStatus> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs(),new StringDeserializer(),
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(),
                 new JsonDeserializer<>(StationStatus.class));
     }
 
