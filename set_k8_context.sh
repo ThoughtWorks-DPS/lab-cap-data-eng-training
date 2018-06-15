@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export AWS_PROFILE=de_training
-export AWS_REGION=us-west-2
 
 
 KEY_NAME="dataeng-k8"
